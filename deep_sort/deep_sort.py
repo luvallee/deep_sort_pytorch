@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import cv2
 
 from .deep.feature_extractor import Extractor, FastReIDExtractor
 from .sort.nn_matching import NearestNeighborDistanceMetric
@@ -113,6 +114,13 @@ class DeepSort(object):
         for box in bbox_xywh:
             x1, y1, x2, y2 = self._xywh_to_xyxy(box)
             im = ori_img[y1:y2, x1:x2]
+
+
+            # Convertir en RGB si niveau de gris
+            if im.ndim == 2 or im.shape[2] == 1:
+                im = cv2.cvtColor(im, cv2.COLOR_GRAY2RGB)
+
+
             im_crops.append(im)
         if im_crops:
             features = self.extractor(im_crops)
